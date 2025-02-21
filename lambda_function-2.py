@@ -1,3 +1,24 @@
+import boto3
+import json
+import csv
+import os   
+from datetime import date
+
+ec2 = boto3.client("ec2")
+elb = boto3.client('elbv2')
+autoscaling = boto3.client('autoscaling')
+rds = boto3.client("rds")
+ecr = boto3.client('ecr')
+sns = boto3.client('sns')
+s3 = boto3.client('s3')
+
+TAG_NAME = "<TAG_NAME>"
+TAG_VALUE = "<TAG_VALUE>"
+
+reports_bucket="<BUCKET_NAME>"
+directory = '/tmp/reports/'
+date_format = date.today().strftime("/%Y/%m/%d/")
+
 def creadte_report(filename, header, datas):
     csvFile = open(directory + filename, 'w', newline='', encoding='utf8')
     writer = csv.writer(csvFile)
@@ -199,3 +220,6 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps('Report generated successfully')
     }
+
+if  __name__ == '__main__':
+    lambda_handler('', '')
