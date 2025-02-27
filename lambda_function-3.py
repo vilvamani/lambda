@@ -194,18 +194,17 @@ def get_ecr():
     for repositorie in response:
         tags =  ecr.list_tags_for_resource(resourceArn=repositorie['repositoryArn'])
 
-        data.append([tags])
+        if not tags['tags']:
+                data.append([repositorie['repositoryName'], "Resource_Not_Tagged"])
+        else:
+            list = []
+            for tag in tags['tags']:
+                list.append(tag['Key'])
+                if tag['Key'] == TAG_NAME and tag['Value'] == TAG_VALUE:
+                    data.append([repositorie['repositoryName'], "Match_Found"])
 
-        # if not tags['Tags']:
-        #     data.append([repositorie['repositoryName'], "Resource_Not_Tagged"])
-        # else:
-        #     list = []
-        #     for tag in tags['tags']:
-        #         list.append(tag['Key'])
-        #         if tag['Key'] == TAG_NAME and tag['Value'] == TAG_VALUE:
-        #             data.append([repositorie['repositoryName'], "Match_Found"])
-        #     if TAG_NAME not in list:
-        #         data.append([repositorie['repositoryName'], TAG_NAME + "_Tag_Missing"])
+            if TAG_NAME not in list:
+                data.append([repositorie['repositoryName'], TAG_NAME + "_Tag_Missing"])
 
     creadte_report('ecr.csv', header, data)
 
