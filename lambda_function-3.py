@@ -279,7 +279,12 @@ def get_delivery_streams():
 
     response = firehose.list_delivery_streams()['DeliveryStreamNames']
 
-    creadte_report('firehose.csv', header, response)
+    for stream_name in response:
+        tags = firehose.list_tags_for_delivery_stream(DeliveryStreamName=stream_name)
+
+        data.append([tags])
+
+        creadte_report('firehose.csv', header, data)
 
 def lambda_handler(event, context):
     if not os.path.exists(directory):
