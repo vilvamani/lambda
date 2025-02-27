@@ -194,16 +194,18 @@ def get_ecr():
     for repositorie in response:
         tags =  ecr.list_tags_for_resource(resourceArn=repositorie['repositoryArn'])
 
-        if not tags['Tags']:
-            data.append([repositorie['repositoryName'], "Resource_Not_Tagged"])
-        else:
-            list = []
-            for tag in tags['tags']:
-                list.append(tag['Key'])
-                if tag['Key'] == TAG_NAME and tag['Value'] == TAG_VALUE:
-                    data.append([repositorie['repositoryName'], "Match_Found"])
-            if TAG_NAME not in list:
-                data.append([repositorie['repositoryName'], TAG_NAME + "_Tag_Missing"])
+        data.append([tags])
+
+        # if not tags['Tags']:
+        #     data.append([repositorie['repositoryName'], "Resource_Not_Tagged"])
+        # else:
+        #     list = []
+        #     for tag in tags['tags']:
+        #         list.append(tag['Key'])
+        #         if tag['Key'] == TAG_NAME and tag['Value'] == TAG_VALUE:
+        #             data.append([repositorie['repositoryName'], "Match_Found"])
+        #     if TAG_NAME not in list:
+        #         data.append([repositorie['repositoryName'], TAG_NAME + "_Tag_Missing"])
 
     creadte_report('ecr.csv', header, data)
 
@@ -254,8 +256,19 @@ def get_waf_acl():
     response = wafv2.list_web_acls(Scope='REGIONAL')['WebACLs']
 
     for web_acl in response:
-        tags = wafv2.list_tags_for_resource(ResourceARN=web_acl['ARN'])
-        data.append([tags])
+        tags = wafv2.list_tags_for_resource(ResourceARN=web_acl['ARN'])['TagInfoForResource']
+
+        if not tags['TagList']:
+                data.append([web_acl['Name'], "Resource_Not_Tagged"])
+        else:
+            list = []
+            for tag in tags['TagList']:
+                list.append(tag['Key'])
+                if tag['Key'] == TAG_NAME and tag['Value'] == TAG_VALUE:
+                    data.append([web_acl['Name'], "Match_Found"])
+
+            if TAG_NAME not in list:
+                data.append([web_acl['Name'], TAG_NAME + "_Tag_Missing"])
 
     creadte_report('waf.csv', header, data)
 
