@@ -4,6 +4,16 @@ import csv
 import os   
 from datetime import date
 
+TAG_NAME = "<TAG_NAME>"
+TAG_VALUE = "<TAG_VALUE>"
+
+reports_bucket="<BUCKET_NAME>"
+directory = '/tmp/reports/'
+date_format = date.today().strftime("/%Y/%m/%d/")
+
+####################
+# Boto3 Objects
+####################
 ec2 = boto3.client("ec2")
 elb = boto3.client('elbv2')
 autoscaling = boto3.client('autoscaling')
@@ -15,13 +25,7 @@ apigateway = boto3.client('apigateway')
 lambda_function = boto3.client('lambda')
 wafv2 = boto3.client('wafv2')
 firehose = boto3.client('firehose')
-
-TAG_NAME = "<TAG_NAME>"
-TAG_VALUE = "<TAG_VALUE>"
-
-reports_bucket="<BUCKET_NAME>"
-directory = '/tmp/reports/'
-date_format = date.today().strftime("/%Y/%m/%d/")
+kinesis = boto3.client('kinesis')
 
 def create_report(filename, header, datas):
     csvFile = open(directory + filename, 'w', newline='', encoding='utf8')
