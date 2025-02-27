@@ -14,6 +14,7 @@ s3 = boto3.client('s3')
 apigateway = boto3.client('apigateway')
 lambda_function = boto3.client('lambda')
 wafv2 = boto3.client('wafv2')
+firehose = boto3.client('firehose')
 
 TAG_NAME = "<TAG_NAME>"
 TAG_VALUE = "<TAG_VALUE>"
@@ -249,7 +250,7 @@ def get_lambda_function():
 
 def get_waf_acl():
     print("*********** WAF V2 ACL List ***********")
-    header = ['WAF_ACL_NAME', 'Tag_Status']
+    header = ['WAF_ACL_Name', 'Tag_Status']
     data = []
 
     response = wafv2.list_web_acls(Scope='REGIONAL')['WebACLs']
@@ -271,6 +272,15 @@ def get_waf_acl():
 
     creadte_report('waf.csv', header, data)
 
+def get_delivery_streams():
+    print("*********** Firehouse Delivery Streams List ***********")
+    header = ['Delivery_Stream_Name', 'Tag_Status']
+    data = []
+
+    response = firehose.list_delivery_streams()['DeliveryStreamNames']
+
+    creadte_report('firehose.csv', header, response)
+
 def lambda_handler(event, context):
     if not os.path.exists(directory):
         os.mkdir(directory)
@@ -286,6 +296,7 @@ def lambda_handler(event, context):
     get_apigateway()
     get_lambda_function()
     get_waf_acl()
+    get_delivery_streams()
 
     return {
         'statusCode': 200,
