@@ -23,7 +23,7 @@ reports_bucket="<BUCKET_NAME>"
 directory = '/tmp/reports/'
 date_format = date.today().strftime("/%Y/%m/%d/")
 
-def creadte_report(filename, header, datas):
+def create_report(filename, header, datas):
     csvFile = open(directory + filename, 'w', newline='', encoding='utf8')
     writer = csv.writer(csvFile)
     writer.writerow(header)
@@ -55,7 +55,7 @@ def get_ec2_instances():
                 if TAG_NAME not in list:
                     data.append([instance['InstanceId'], instance['State']['Name'], TAG_NAME + "_Tag_Missing"])
 
-    creadte_report('ec2.csv', header, data)
+    create_report('ec2.csv', header, data)
 
 def get_sg():
     print("*********** EC2 Security Group ***********")
@@ -76,7 +76,7 @@ def get_sg():
             if TAG_NAME not in list:
                 data.append([security_group['GroupId'], TAG_NAME + "_Tag_Missing"])
 
-    creadte_report('security_group.csv', header, data)
+    create_report('security_group.csv', header, data)
 
 def get_elb():
     print("*********** ELB List ***********")
@@ -99,7 +99,7 @@ def get_elb():
             if TAG_NAME not in list:
                 data.append([loadBalancer['LoadBalancerName'], loadBalancer['State']['Code'], TAG_NAME + "_Tag_Missing"])
     
-    creadte_report('elb.csv', header, data)
+    create_report('elb.csv', header, data)
 
 def get_target_groups():
     print("*********** ELB Target Group List ***********")
@@ -122,7 +122,7 @@ def get_target_groups():
             if TAG_NAME not in list:
                 data.append([targetGroup['TargetGroupName'],targetGroup['LoadBalancerArns'], TAG_NAME + "_Tag_Missing"])
 
-    creadte_report('target_group.csv', header, data)
+    create_report('target_group.csv', header, data)
 
 def get_auto_scaling_groups():
     print("*********** AutoScaling Group List ***********")
@@ -142,7 +142,7 @@ def get_auto_scaling_groups():
             if TAG_NAME not in list:
                 data.append([autoScalingGroup['AutoScalingGroupName'], TAG_NAME + "_Tag_Missing"])
 
-    creadte_report('asg.csv', header, data)
+    create_report('asg.csv', header, data)
 
 def get_rds():
     print("*********** RDS Instance List ***********")
@@ -162,7 +162,7 @@ def get_rds():
             if TAG_NAME not in list:
                 data.append([dbInstance['DBInstanceIdentifier'],dbInstance['DBInstanceStatus'], TAG_NAME + "_Tag_Missing"])
 
-    creadte_report('rds.csv', header, data)
+    create_report('rds.csv', header, data)
 
 def get_sns():
     print("*********** SNS Topic List ***********")
@@ -184,7 +184,7 @@ def get_sns():
             if TAG_NAME not in list:
                 data.append([topic['TopicArn'], TAG_NAME + "_Tag_Missing"])
 
-    creadte_report('sns.csv', header, data)
+    create_report('sns.csv', header, data)
 
 def get_ecr():
     print("*********** ECR List ***********")
@@ -207,7 +207,7 @@ def get_ecr():
             if TAG_NAME not in list:
                 data.append([repositorie['repositoryName'], TAG_NAME + "_Tag_Missing"])
 
-    creadte_report('ecr.csv', header, data)
+    create_report('ecr.csv', header, data)
 
 def get_apigateway():
     print("*********** API Gateway List ***********")
@@ -225,7 +225,7 @@ def get_apigateway():
             elif TAG_NAME in restApi['tags'] and restApi['tags'][TAG_NAME] == TAG_VALUE:
                 data.append([restApi['name'], "Match_Found"])
 
-    creadte_report('api_gateway.csv', header, data)
+    create_report('api_gateway.csv', header, data)
 
 def get_lambda_function():
     print("*********** Lambda Functions List ***********")
@@ -246,7 +246,7 @@ def get_lambda_function():
             elif TAG_NAME in tags['Tags'] and tags['Tags'][TAG_NAME] == TAG_VALUE:
                 data.append([function['FunctionName'], "Match_Found"])
 
-    creadte_report('lambda_function.csv', header, data)
+    create_report('lambda_function.csv', header, data)
 
 def get_waf_acl():
     print("*********** WAF V2 ACL List ***********")
@@ -270,7 +270,7 @@ def get_waf_acl():
             if TAG_NAME not in list:
                 data.append([web_acl['Name'], TAG_NAME + "_Tag_Missing"])
 
-    creadte_report('waf.csv', header, data)
+    create_report('waf.csv', header, data)
 
 def get_delivery_streams():
     print("*********** Firehouse Delivery Streams List ***********")
@@ -284,7 +284,7 @@ def get_delivery_streams():
 
         data.append([tags])
 
-        creadte_report('firehose.csv', header, data)
+    create_report('firehose.csv', header, data)
 
 def lambda_handler(event, context):
     if not os.path.exists(directory):
