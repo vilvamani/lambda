@@ -282,7 +282,17 @@ def get_delivery_streams():
     for stream_name in response:
         tags = firehose.list_tags_for_delivery_stream(DeliveryStreamName=stream_name)
 
-        data.append([tags])
+        if not tags['Tags']:
+                data.append([stream_name, "Resource_Not_Tagged"])
+        else:
+            list = []
+            for tag in tags['Tags']:
+                list.append(tag['Key'])
+                if tag['Key'] == TAG_NAME and tag['Value'] == TAG_VALUE:
+                    data.append([stream_name, "Match_Found"])
+
+            if TAG_NAME not in list:
+                data.append([stream_name, TAG_NAME + "_Tag_Missing"])
 
     create_report('firehose.csv', header, data)
 
