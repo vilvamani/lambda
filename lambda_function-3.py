@@ -1,7 +1,7 @@
 import boto3
 import json
 import csv
-import os   
+import os 
 from datetime import date
 
 TAG_NAME = "<TAG_NAME>"
@@ -26,6 +26,9 @@ lambda_function = boto3.client('lambda')
 wafv2 = boto3.client('wafv2')
 firehose = boto3.client('firehose')
 kinesis = boto3.client('kinesis')
+ecs = boto3.client('ecs')
+glue = boto3.client('glue')
+cognito = boto3.client('cognito-idp')
 
 def create_report(filename, header, datas):
     csvFile = open(directory + filename, 'w', newline='', encoding='utf8')
@@ -300,6 +303,32 @@ def get_delivery_streams():
 
     create_report('firehose.csv', header, data)
 
+def get_kinesis_streams():
+    print("*********** Kinesis Streams List ***********")
+    header = ['Kinesis_Stream_Name', 'Tag_Status']
+    data = []
+
+    response = kinesis.list_streams()['StreamNames']
+
+    for stream in response:
+        tags = kinesis.list_tags_for_stream(StreamName=stream)
+        data.append(tags)
+
+    create_report('kinesis.csv', header, data)
+
+def get_ecs_cluster():
+    print("*********** ECS Cluster List ***********")
+    header = ['ECS_Cluster_Name', 'Tag_Status']
+    data = []
+
+    response = ecs.list_clusters()['clusterArns']
+
+    for cluster_arn in response:
+        data.append(ecs.describe_clusters(clusters=[cluster_arn], include=['TAGS']))['clusters']
+
+    create_report('ecs.csv', header, data)
+
+
 def lambda_handler(event, context):
     if not os.path.exists(directory):
         os.mkdir(directory)
@@ -316,11 +345,10 @@ def lambda_handler(event, context):
     get_lambda_function()
     get_waf_acl()
     get_delivery_streams()
+    get_kinesis_streams()
+    get_ecs_cluster()
 
     return {
         'statusCode': 200,
         'body': json.dumps('Report generated successfully')
     }
-
-if  __name__ == '__main__':
-    lambda_handler('', '')
