@@ -310,6 +310,8 @@ def get_kinesis_streams():
 
     response = kinesis.list_streams()['StreamNames']
 
+    print(response)
+
     for stream in response:
         tags = kinesis.list_tags_for_stream(StreamName=stream)
         data.append(tags)
@@ -323,10 +325,12 @@ def get_ecs_cluster():
 
     response = ecs.list_clusters()['clusterArns']
 
-    for cluster_arn in response:
-        data.append(ecs.describe_clusters(clusters=[cluster_arn], include=['TAGS']))['clusters']
+    print(response)
 
-    create_report('ecs.csv', header, data)
+    # for cluster_arn in response:
+    #     data.append(ecs.describe_clusters(clusters=[cluster_arn], include=['TAGS']))['clusters']
+
+    # create_report('ecs.csv', header, data)
 
 
 def lambda_handler(event, context):
