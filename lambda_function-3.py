@@ -325,7 +325,21 @@ def get_ecs_cluster():
 
     for cluster_arn in response:
         cluster = ecs.describe_clusters(clusters=[cluster_arn], include=['TAGS'])['clusters']
-        data.append(cluster)
+        data.append([cluster['clusterName'], cluster['tags']])
+
+        if not cluster['tags']:
+                data.append([cluster['clusterName'], "Resource_Not_Tagged"])
+
+        else:
+            list = []
+            for tag in cluster['tags']:
+                list.append(tag['key'])
+
+                if tag['key'] == TAG_NAME and tag['value'] == TAG_VALUE:
+                    data.append([cluster['clusterName'], "Match_Found"])
+
+            if TAG_NAME not in list:
+                data.append([cluster['clusterName'], TAG_NAME + "_Tag_Missing"])
 
     create_report('ecs.csv', header, data)
 
