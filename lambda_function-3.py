@@ -7,6 +7,9 @@ from datetime import date
 TAG_NAME = "<TAG_NAME>"
 TAG_VALUE = "<TAG_VALUE>"
 
+TAG_NAME_1 = "<TAG_NAME>"
+TAG_VALUE_1 = "<TAG_VALUE>"
+
 reports_bucket="<BUCKET_NAME>"
 directory = '/tmp/reports/'
 date_format = date.today().strftime("/%Y/%m/%d/")
@@ -335,8 +338,8 @@ def get_ecs_cluster():
     response = ecs.list_clusters()['clusterArns']
 
     for cluster_arn in response:
-        cluster = ecs.describe_clusters(clusters=[cluster_arn], include=['TAGS'])['clusters']
-        
+        cluster = ecs.describe_clusters(clusters=[cluster_arn], include=['TAGS'])['clusters'][0]
+
         if 'tags' not in cluster:
             data.append([cluster['clusterName'], "Resource_Not_Tagged"])
 
@@ -348,7 +351,10 @@ def get_ecs_cluster():
                 if tag['key'] == TAG_NAME and tag['value'] == TAG_VALUE:
                     data.append([cluster['clusterName'], "Match_Found"])
 
-            if TAG_NAME not in list:
+                if tag['key'] == TAG_NAME_1 and tag['value'] == TAG_VALUE_1:
+                    data.append([cluster['clusterName'], "Match_Found"])
+
+            if TAG_NAME not in list and TAG_NAME_1 not in list:
                 data.append([cluster['clusterName'], TAG_NAME + "_Tag_Missing"])
 
     create_report('ecs.csv', header, data)
