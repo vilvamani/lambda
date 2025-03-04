@@ -312,7 +312,18 @@ def get_kinesis_streams():
 
     for stream in response:
         tags = kinesis.list_tags_for_stream(StreamName=stream)
-        data.append(tags)
+
+        if not tags['Tags']:
+                data.append([stream, "Resource_Not_Tagged"])
+        else:
+            list = []
+            for tag in tags['Tags']:
+                list.append(tag['Key'])
+                if tag['Key'] == TAG_NAME and tag['Value'] == TAG_VALUE:
+                    data.append([stream, "Match_Found"])
+
+            if TAG_NAME not in list:
+                data.append([stream, TAG_NAME + "_Tag_Missing"])
 
     create_report('kinesis.csv', header, data)
 
@@ -367,3 +378,4 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps('Report generated successfully')
     }
+
