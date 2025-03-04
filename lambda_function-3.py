@@ -336,8 +336,7 @@ def get_ecs_cluster():
 
     for cluster_arn in response:
         cluster = ecs.describe_clusters(clusters=[cluster_arn], include=['TAGS'])['clusters']
-        data.append([cluster['clusterName'], cluster['tags']])
-
+        
         if not cluster['tags']:
                 data.append([cluster['clusterName'], "Resource_Not_Tagged"])
 
